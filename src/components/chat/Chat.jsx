@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { database, ref, onValue, push, remove } from './firebase';
+import {database, ref, onValue, push} from './firebase'
 import './chat.css';
 
 const ChatBox = () => {
@@ -8,37 +8,16 @@ const ChatBox = () => {
 
   useEffect(() => {
     const messagesRef = ref(database, 'messages');
-
     // Listen for updates to the messages in the database
     onValue(messagesRef, (snapshot) => {
       const data = snapshot.val();
-      const newMessages = data ? Object.entries(data).map(([id, message]) => ({ id, message })) : [];
-
-      // Check for new messages to alert
-      if (newMessages.length > messages.length) {
-        const lastMessage = newMessages[newMessages.length - 1].message;
-        showNotification(lastMessage);
+      if (data) {
+        setMessages(Object.values(data));
+      } else {
+        setMessages([]);
       }
-
-      setMessages(newMessages);
     });
-  }, [messages.length]);
-
-  const showNotification = (message) => {
-    if (Notification.permission === 'granted') {
-      new Notification('New Message', {
-        body: message,
-      });
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission().then((permission) => {
-        if (permission === 'granted') {
-          new Notification('New Message', {
-            body: message,
-          });
-        }
-      });
-    }
-  };
+  }, []);
 
   const handleInputChange = (e) => {
     setInputMessage(e.target.value);
@@ -53,37 +32,24 @@ const ChatBox = () => {
           setInputMessage('');
         })
         .catch((error) => {
-          console.error('Error sending message:', error);
+          console.error("Error sending message:", error);
         });
+      
     }
-  };
-
-  const handleDeleteMessage = (id) => {
-    const messageRef = ref(database, `messages/${id}`);
-    remove(messageRef)
-      .then(() => {
-        console.log('Message deleted successfully');
-      })
-      .catch((error) => {
-        console.error('Error deleting message:', error);
-      });
   };
 
   return (
     <div className="chat-box-container">
       <div className="chat-box-chat-container">
-        {messages.map(({ id, message }) => (
-          <div key={id} className="chat-box-message">
+        {messages.map((message, index) => (
+          <div key={index} className="chat-box-message">
             {message}
-            <button onClick={() => handleDeleteMessage(id)} className="chat-box-delete-button">
-              Delete
-            </button>
           </div>
         ))}
       </div>
       <div className="chat-box-input-container">
         <input
-          id="chat-message-input"
+          id="chat-message-input" // Added id attribute
           type="text"
           value={inputMessage}
           onChange={handleInputChange}
