@@ -4,7 +4,7 @@ import ChatBox from './components/chat/Chat';
 function App() {
   return (
     <div className="App">
-      <h1>Chat Box Example</h1>
+      <h1>Private Talker</h1>
       <ChatBox />
     </div>
   );
