@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { database, ref, onValue, push } from './firebase';
+import { database, ref, onValue, push, remove } from './firebase';
 import './chat.css';
 
 const ChatBox = () => {
@@ -12,11 +12,11 @@ const ChatBox = () => {
     // Listen for updates to the messages in the database
     onValue(messagesRef, (snapshot) => {
       const data = snapshot.val();
-      const newMessages = data ? Object.values(data) : [];
+      const newMessages = data ? Object.entries(data).map(([id, message]) => ({ id, message })) : [];
 
       // Check for new messages to alert
       if (newMessages.length > messages.length) {
-        const lastMessage = newMessages[newMessages.length - 1];
+        const lastMessage = newMessages[newMessages.length - 1].message;
         showNotification(lastMessage);
       }
 
@@ -58,12 +58,26 @@ const ChatBox = () => {
     }
   };
 
+  const handleDeleteMessage = (id) => {
+    const messageRef = ref(database, `messages/${id}`);
+    remove(messageRef)
+      .then(() => {
+        console.log('Message deleted successfully');
+      })
+      .catch((error) => {
+        console.error('Error deleting message:', error);
+      });
+  };
+
   return (
     <div className="chat-box-container">
       <div className="chat-box-chat-container">
-        {messages.map((message, index) => (
-          <div key={index} className="chat-box-message">
+        {messages.map(({ id, message }) => (
+          <div key={id} className="chat-box-message">
             {message}
+            <button onClick={() => handleDeleteMessage(id)} className="chat-box-delete-button">
+              Delete
+            </button>
           </div>
         ))}
       </div>
