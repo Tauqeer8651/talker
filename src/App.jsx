@@ -4,7 +4,9 @@ import ChatBox from './components/chat/Chat';
 function App() {
   return (
     <div className="App">
-      <h1>Private Talker</h1>
+       {user ? (
+        <>
+          <h1>Private Talker</h1>
       <ChatBox />
       <p>
      
@@ -12,6 +14,14 @@ function App() {
      <b>if you have any problem contact us or send us your feedback on  <a href="mailto:tauqeeralam108@gmail.com?subject=Support Request&body=Hello, I need help with...">Contact Support</a> </b>   
     
       </p>
+        </>
+      ) : (
+      
+         <Login />  
+      )}
+      
+      
+     
     </div>
   );
 }
