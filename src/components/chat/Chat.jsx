@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import {database, ref, onValue, push} from './firebase'
+import React, { useState, useEffect, useRef } from 'react';
+import { database, ref, onValue, push } from './firebase';
 import './chat.css';
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
+  
+  // Create a ref to the end of the chat messages
+  const endRef = useRef(null);
 
   useEffect(() => {
     const messagesRef = ref(database, 'messages');
@@ -18,6 +21,13 @@ const ChatBox = () => {
       }
     });
   }, []);
+
+  // Scroll to the latest message when messages update
+  useEffect(() => {
+    if (endRef.current) {
+      endRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]); // Trigger scroll when messages change
 
   const handleInputChange = (e) => {
     setInputMessage(e.target.value);
@@ -34,7 +44,6 @@ const ChatBox = () => {
         .catch((error) => {
           console.error("Error sending message:", error);
         });
-      
     }
   };
 
@@ -45,8 +54,9 @@ const ChatBox = () => {
           <div key={index} className="chat-box-message">
             {message}
           </div>
-       <div ref={endRef}></div>
         ))}
+        {/* Scroll to the bottom */}
+        <div ref={endRef}></div>
       </div>
       <div className="chat-box-input-container">
         <input
