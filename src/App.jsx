@@ -3,6 +3,7 @@ import ChatBox from './components/chat/Chat';
 import Login from "./components/chat/Login.jsx";
 
 function App() {
+  const user = false;
   return (
     <div className="App">
        {user ? (
