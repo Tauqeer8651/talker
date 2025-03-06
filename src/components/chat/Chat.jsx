@@ -45,6 +45,7 @@ const ChatBox = () => {
           <div key={index} className="chat-box-message">
             {message}
           </div>
+       <div ref={endRef}></div>
         ))}
       </div>
       <div className="chat-box-input-container">
